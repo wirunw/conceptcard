@@ -237,11 +237,13 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     concept:'Commute kit: แผ่นเช็ดหน้า + ซองเซรั่มสงบผิว ไม่แสบในอากาศร้อน ใช้หลังลงวินก่อนเข้าออฟฟิศ',
     claims:'ช่วยให้ผิวดูสงบ รอยแดงลดลงอย่างเห็นได้หลังเดินทางร้อน ๆ · ไม่เหนียวเหนอะหนะ (เครื่องสำอาง)',
     test:'ยังไม่รู้ว่าคนจะยอมใช้จริงหลังลงวินไหม → คุยกับคนนั่งวิน 5 คน พร้อมให้ดูภาพ concept',
+    guesses:'คนนั่งวินจะยอมหยุดดูแลผิวหลังลงวินจริงไหม · แสบเพราะสูตรหรือเพราะเหงื่อ · ยอมจ่ายเท่าไร',
+    dfvr:'D4 F4 V3 R3 — จุดเสี่ยงคือคำว่า "รอยแดงลดลง" ต้องมีผลทดสอบในคนรองรับ',
     card:'',
     pitch:''
   };
 
-  const L={background:'พื้นฐานของฉัน',interests:'เรื่องที่สนใจ',domain:'ประเภทงาน',problems:'ปัญหาที่เคยเห็น',problem:'โจทย์ที่เลือก',knowuser:'สิ่งที่รู้เกี่ยวกับผู้ใช้',user:'ผู้ใช้',insight:'เหตุผลจริง',pov:'POV',hmw:'คำถามตั้งต้น',myideas:'ไอเดียของฉันเอง',shortlist:'3 ไอเดียที่ชอบ',evidence:'หลักฐานที่มี',concept:'ไอเดียที่เลือก',claims:'เคลม',test:'สิ่งที่ต้องทดสอบ',card:'Concept Card',pitch:'pitch'};
+  const L={background:'พื้นฐานของฉัน',interests:'เรื่องที่สนใจ',domain:'ประเภทงาน',problems:'ปัญหาที่เคยเห็น',problem:'โจทย์ที่เลือก',knowuser:'สิ่งที่รู้เกี่ยวกับผู้ใช้',user:'ผู้ใช้',insight:'เหตุผลจริง',guesses:'สิ่งที่ยังเดา',dfvr:'D-F-V-R',pov:'POV',hmw:'คำถามตั้งต้น',myideas:'ไอเดียของฉันเอง',shortlist:'3 ไอเดียที่ชอบ',evidence:'หลักฐานที่มี',concept:'ไอเดียที่เลือก',claims:'เคลม',test:'สิ่งที่ต้องทดสอบ',card:'Concept Card',pitch:'pitch'};
 
   // field definitions
   const F={
@@ -253,12 +255,14 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     knowuser:{l:'สิ่งที่ฉันรู้เกี่ยวกับผู้ใช้กลุ่มนี้',opt:1,h:'จากประสบการณ์หรือที่เคยคุยกับคนจริง',t:'area'},
     user:{l:'ผู้ใช้ที่เจาะจง',h:'ใคร อายุเท่าไร อยู่ในสถานการณ์ไหน',t:'area'},
     insight:{l:'เหตุผลจริงที่เลือก (insight)',h:'ทำไมเขาถึงยังติดปัญหานี้',t:'area'},
+    guesses:{l:'สิ่งที่ยังเป็นการเดา ต้องไปถามคนจริง',opt:1,h:'ข้อ 4 ในคำตอบของ AI',t:'area'},
     pov:{l:'POV',opt:1,h:'ประโยคสรุปปัญหาที่ AI เขียนให้',t:'area'},
     hmw:{l:'คำถามตั้งต้นที่เลือก',h:'ขึ้นต้นด้วย "เราจะ..." ลงท้ายด้วย "ได้อย่างไร"',t:'area'},
     myideas:{l:'ไอเดียของฉันเอง',opt:1,h:'ถ้ามี ใส่ไว้ AI จะคิดต่อจากนี้และไม่ซ้ำ',t:'area'},
     shortlist:{l:'3 ไอเดียที่ฉันชอบ',h:'คัดลอกจากคำตอบ AI หรือดัดแปลงเอง',t:'area'},
     evidence:{l:'หลักฐานที่มีตอนนี้',opt:1,h:'เช่น ผลแล็บ ต้นแบบ ข้อมูลจากผู้ใช้ ถ้ายังไม่มีเว้นได้',t:'area'},
     concept:{l:'ไอเดียที่เลือก',h:'1 ไอเดียที่จะไปต่อ',t:'area'},
+    dfvr:{l:'สรุปคะแนน D-F-V-R ของไอเดียที่เลือก',opt:1,h:'เช่น D4 F3 V3 R2 — จุดเสี่ยงคือคำว่า "ลดรอยแดง"',t:'area'},
     claims:{l:'สิ่งที่จะบอกผู้ใช้ (เคลม) ที่ปลอดภัยแล้ว',t:'area'},
     test:{l:'สิ่งที่ยังไม่แน่ใจที่สุด และจะทดสอบอย่างไร',t:'area'},
     card:{l:'Concept Card ที่ได้',opt:1,h:'วางการ์ดที่ AI เรียบเรียงให้ แล้วแก้ให้เป็นของเรา',t:'area',big:1},
@@ -277,7 +281,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
         F:'Table: # | Who struggles, in what situation | Problem they face | Why it is worth doing | How it uses my background | Likely type of product or service. Then ask me one question that would help me choose. Use plain language.'}},
     {id:'s2',short:'เข้าใจคน',title:'เข้าใจคนที่เราจะช่วย',min:8,
      tip:'ให้ AI ช่วยเจาะว่าใครลำบากที่สุด และ "ทำไม" เขาถึงยังติดปัญหานี้ คำตอบว่าทำไมเรียกว่า insight เป็นคำอธิบาย ไม่ใช่ตัวเลข ทุกอย่างที่ AI เล่าเป็นการเดา ให้จดไว้ไปถามคนจริงทีหลัง',
-     inputs:['knowuser'],needs:['problem'],outs:['user','insight'],
+     inputs:['knowuser'],needs:['problem'],outs:['user','insight','guesses'],
      th:{R:'คุณคือนักวิจัยด้านพฤติกรรมผู้ใช้ในระบบสุขภาพ ที่ช่วยให้ทีมเข้าใจคนก่อนคิดหาทางแก้',
         T:[['โจทย์ของฉัน: {problem}','problem'],['สิ่งที่ฉันรู้เกี่ยวกับผู้ใช้: {knowuser}','knowuser'],['ช่วยฉันเข้าใจผู้ใช้ 4 ข้อ:\n1) ระบุผู้ใช้ที่เจาะจงที่สุด 1 กลุ่ม (ใคร อายุ สถานการณ์)\n2) สวมบทเป็นผู้ใช้คนนั้น เล่าหนึ่งวันของเขาสั้น ๆ ไม่เกิน 150 คำ ว่าเคยลองอะไร ทำไมเลิก\n3) เสนอ "เหตุผลจริง" 3 ข้อว่าทำไมเขายังติดปัญหานี้ แต่ละข้อต้องอธิบายว่าทำไม ไม่ใช่สถิติ และควรทำให้เราแปลกใจนิดหนึ่ง\n4) สิ่งที่ยังเป็นการเดา 3 ข้อ ที่ต้องไปถามคนจริง\nถ้าไม่แน่ใจเรื่องไหนให้บอกว่าไม่แน่ใจ']],
         F:'4 หัวข้อตามลำดับ ใช้ภาษาง่าย ๆ'},
@@ -305,7 +309,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
         F:'Table: # | Innovation type | Idea (≤ 25 words) | Why the user would like it. Finish with the 3 most unexpected ideas.'}},
     {id:'s5',short:'คัดและตรวจ',title:'คัดไอเดีย และตรวจว่าพูดได้จริง',min:12,
      tip:'ให้ AI เป็นกรรมการ ให้คะแนน 3 ไอเดียด้วย 4 เลนส์: คนอยากได้ (D) ทำได้จริง (F) ขายได้ (V) และพูดได้ตามกฎหมาย (R) และช่วยปรับคำโฆษณาให้ไม่เกินหลักฐาน ถ้า R ได้ 1 แปลว่าต้องเปลี่ยนคำพูดหรือเปลี่ยนไอเดีย เรื่องกฎหมายต้องตรวจกับประกาศจริงอีกครั้ง',
-     inputs:['evidence'],needs:['shortlist','user','domain'],outs:['concept','claims','test'],
+     inputs:['evidence'],needs:['shortlist','user','domain'],outs:['concept','dfvr','claims','test'],
      th:{R:'คุณคือกรรมการประเมินนวัตกรรมสุขภาพ เป็นเภสัชกรที่รู้กฎระเบียบสุขภาพของไทย (อย. ทุกหมวด รวมซอฟต์แวร์ทางการแพทย์ PDPA และจรรยาบรรณวิชาชีพ) และรู้เรื่องระดับหลักฐาน',
         T:[['ไอเดีย 3 ข้อ: {shortlist}','shortlist'],['ผู้ใช้: {user}','user'],['ประเภทงาน: {domain}','domain'],['หลักฐานที่มีตอนนี้: {evidence}','evidence'],['สำหรับแต่ละไอเดีย:\n1) ให้คะแนน 1–5 สี่เลนส์ พร้อมเหตุผลข้อละ 1 บรรทัด: D คนอยากได้ · F ทำได้จริงและปลอดภัย · V ขายได้คุ้ม · R พูดได้ตามกฎหมาย\n2) น่าจะอยู่ภายใต้กฎหมายหรือหน่วยงานใด และคำพูดไหนเสี่ยงเกินหลักฐาน พร้อมคำที่ปลอดภัยกว่า\n3) หลักฐานที่ต้องมี และการทดสอบที่ถูกที่สุดในสัปดาห์หน้า\nแล้วแนะนำ 1 ไอเดียที่ควรไปต่อ ห้ามแต่งเลขประกาศหรือเอกสารอ้างอิง ถ้าไม่แน่ใจให้เขียนว่า "ต้องตรวจกับแหล่งทางการ"']],
         F:'ตารางคะแนน: ไอเดีย | D | F | V | R | รวม | เหตุผล แล้วตามด้วยหัวข้อกฎหมาย หลักฐาน และคำแนะนำ ใช้ภาษาง่าย ๆ'},
@@ -317,12 +321,12 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
         en:{R:'Play two roles in turn: (1) brand manager of the market leader in this category in Thailand; (2) a user who has been let down by over-promising ads.',T:[['Idea: {concept}','concept'],['As the competitor, how would you respond within six months? As the user, what would make you distrust or not buy it?']],F:'Two sections, max 5 bullets each. End with the single toughest question for me.'}}},
     {id:'s6',short:'Concept Card',title:'รวมทุกอย่างเป็น Concept Card',min:10,
      tip:'ให้ AI เรียบเรียงทุกอย่างที่เราเลือกมาเป็นการ์ด 9 ช่อง ช่องไหนยังไม่มีข้อมูลให้ AI เขียนว่า "ต้องเติม" แทนการแต่ง แล้วเราแก้ให้เป็นของเรา ด้านล่างมีร่างการ์ดจากข้อมูลที่กรอกไว้ให้ด้วย',
-     inputs:[],needs:['problem','user','insight','pov','hmw','concept','claims','test'],outs:['card'],card:true,
+     inputs:[],needs:['problem','user','insight','pov','hmw','concept','dfvr','claims','test','guesses'],outs:['card'],card:true,
      th:{R:'คุณคือผู้ช่วยเรียบเรียงแนวคิดนวัตกรรมสุขภาพให้อ่านง่ายในหน้าเดียว',
-        T:[['โจทย์: {problem}','problem'],['ผู้ใช้: {user}','user'],['เหตุผลจริง: {insight}','insight'],['POV: {pov}','pov'],['คำถามตั้งต้น: {hmw}','hmw'],['ไอเดียที่เลือก: {concept}','concept'],['เคลม: {claims}','claims'],['สิ่งที่ต้องทดสอบ: {test}','test'],['หลักฐานที่มี: {evidence}','evidence'],['เรียบเรียงเป็น Concept Card 9 ช่อง: 1 ชื่อและคำอธิบายสั้น · 2 ผู้ใช้และงานที่เขาต้องการทำให้สำเร็จ · 3 POV และคำถามตั้งต้น · 4 คุณค่าที่ผู้ใช้ได้ (1 ประโยค) · 5 ประเภทผลิตภัณฑ์/บริการ และเคลมหลัก · 6 จุดแข็งและจุดเสี่ยงตามเลนส์ D-F-V-R · 7 สิ่งที่ยังไม่แน่ใจที่สุดและการทดสอบที่ถูกที่สุด · 8 การใช้ AI (ให้ฉันเติมเอง) · 9 สิ่งที่เรายังไม่รู้\nใช้เฉพาะข้อมูลที่ให้ไว้ ช่องไหนไม่มีข้อมูลให้เขียนว่า [ต้องเติม] ห้ามแต่งข้อมูลเพิ่ม']],
+        T:[['โจทย์: {problem}','problem'],['ผู้ใช้: {user}','user'],['เหตุผลจริง: {insight}','insight'],['POV: {pov}','pov'],['คำถามตั้งต้น: {hmw}','hmw'],['ไอเดียที่เลือก: {concept}','concept'],['คะแนน D-F-V-R: {dfvr}','dfvr'],['เคลม: {claims}','claims'],['สิ่งที่ต้องทดสอบ: {test}','test'],['หลักฐานที่มี: {evidence}','evidence'],['สิ่งที่ยังเป็นการเดา: {guesses}','guesses'],['เรียบเรียงเป็น Concept Card 9 ช่อง: 1 ชื่อและคำอธิบายสั้น · 2 ผู้ใช้และงานที่เขาต้องการทำให้สำเร็จ · 3 POV และคำถามตั้งต้น · 4 คุณค่าที่ผู้ใช้ได้ (1 ประโยค) · 5 ประเภทผลิตภัณฑ์/บริการ และเคลมหลัก · 6 จุดแข็งและจุดเสี่ยงตามเลนส์ D-F-V-R · 7 สิ่งที่ยังไม่แน่ใจที่สุดและการทดสอบที่ถูกที่สุด · 8 การใช้ AI (ให้ฉันเติมเอง) · 9 สิ่งที่เรายังไม่รู้\nใช้เฉพาะข้อมูลที่ให้ไว้ ช่องไหนไม่มีข้อมูลให้เขียนว่า [ต้องเติม] ห้ามแต่งข้อมูลเพิ่ม']],
         F:'9 ช่องเรียงเลข ช่องละ 1–3 บรรทัด ภาษาง่าย ๆ'},
      en:{R:'You help turn a health-innovation idea into a clear one-page summary.',
-        T:[['Problem: {problem}','problem'],['User: {user}','user'],['Real reason: {insight}','insight'],['POV: {pov}','pov'],['How might we: {hmw}','hmw'],['Chosen idea: {concept}','concept'],['Claims: {claims}','claims'],['What to test: {test}','test'],['Evidence: {evidence}','evidence'],['Arrange this into a 9-field Concept Card: 1 name and short description · 2 user and the job they want done · 3 POV and how-might-we question · 4 value to the user (1 sentence) · 5 product/service type and main claim · 6 strengths and risks on D-F-V-R · 7 biggest uncertainty and cheapest test · 8 AI use (leave for me) · 9 what we still do not know\nUse only the information given; write [to fill] where something is missing. Do not invent anything.']],
+        T:[['Problem: {problem}','problem'],['User: {user}','user'],['Real reason: {insight}','insight'],['POV: {pov}','pov'],['How might we: {hmw}','hmw'],['Chosen idea: {concept}','concept'],['D-F-V-R scores: {dfvr}','dfvr'],['Claims: {claims}','claims'],['What to test: {test}','test'],['Evidence: {evidence}','evidence'],['Still guesses: {guesses}','guesses'],['Arrange this into a 9-field Concept Card: 1 name and short description · 2 user and the job they want done · 3 POV and how-might-we question · 4 value to the user (1 sentence) · 5 product/service type and main claim · 6 strengths and risks on D-F-V-R · 7 biggest uncertainty and cheapest test · 8 AI use (leave for me) · 9 what we still do not know\nUse only the information given; write [to fill] where something is missing. Do not invent anything.']],
         F:'9 numbered fields, 1–3 lines each, plain language.'}},
     {id:'s7',short:'Pitch',title:'ร่าง pitch 60 วินาที และซ้อมรับคำถาม',min:8,
      tip:'pitch ที่ดีมี 5 จังหวะ: ใครลำบาก · ทำไม · ไอเดียของเรา · พูดได้และมีหลักฐาน · จะทดสอบอะไรต่อ ให้ AI ร่าง แล้วเราพูดด้วยภาษาของตัวเอง ด้านล่างมี AI log ที่บันทึกให้อัตโนมัติว่าเราใช้ prompt ขั้นไหนไปบ้าง',
@@ -373,14 +377,20 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     return '<div class="field'+(f.big?' wide':'')+'"><label for="f_'+k+'">'+f.l+(f.opt?' <span class="opt">(ไม่บังคับ)</span>':'')+'</label>'+ctl+(f.h?'<div class="help">'+f.h+'</div>':'')+'</div>';
   }
 
+  function aiSteps(){if(mode==='example')return 'ใช้ AI ในขั้น 1–7 (ตัวอย่าง)';const n=[...new Set(log.map(x=>parseInt(x.s)).filter(Boolean))].sort((a,b)=>a-b);return n.length?'ใช้ AI ในขั้น '+n.join(', ')+' (รายละเอียดใน AI log ขั้น 7)':'[ยังไม่มีบันทึก — ดู AI log ขั้น 7]'}
   function cardDraft(){
-    const v=k=>val(k)||'[ต้องเติม]';
-    return 'CONCEPT CARD\n1. ชื่อและคำอธิบาย: '+v('concept')+'\n2. ผู้ใช้และงานที่ต้องการทำให้สำเร็จ: '+v('user')+' — '+v('problem')+'\n3. POV / คำถามตั้งต้น: '+v('pov')+' | '+v('hmw')+'\n4. คุณค่าที่ผู้ใช้ได้: [ต้องเติม 1 ประโยค]\n5. ประเภทและเคลมหลัก: '+(val('domain')||'[ต้องเติม]')+' · '+v('claims')+'\n6. จุดแข็งและจุดเสี่ยง (D-F-V-R): [ดูผลขั้น 5]\n7. สิ่งที่ยังไม่แน่ใจที่สุด + การทดสอบ: '+v('test')+'\n8. การใช้ AI: ดู AI log ขั้น 7\n9. สิ่งที่เรายังไม่รู้: [ต้องเติม]';
+    const G='[ยังไม่มีข้อมูล — ให้ AI เติมหรือเขียนเอง]';
+    const v=k=>val(k)||G, j=(...ks)=>ks.map(k=>val(k)).filter(Boolean).join(' — ')||G;
+    const pv=[val('pov'),val('hmw')].filter(Boolean).join(' | ')||G;
+    const ty=[val('domain'),val('claims')].filter(Boolean).join(' · ')||G;
+    const tst=[val('test'),val('evidence')?'หลักฐานที่มี: '+val('evidence'):''].filter(Boolean).join(' · ')||G;
+    return 'CONCEPT CARD\n1. ชื่อและคำอธิบาย: '+v('concept')+'\n2. ผู้ใช้และงานที่ต้องการทำให้สำเร็จ: '+j('user','problem')+'\n3. POV / คำถามตั้งต้น: '+pv+'\n4. คุณค่าที่ผู้ใช้ได้: '+(val('concept')&&val('insight')?'[เขียน 1 ประโยคว่าไอเดียนี้ตอบเหตุผลจริงของผู้ใช้อย่างไร — ให้ AI ช่วยร่างได้]':G)+'\n5. ประเภทและเคลมหลัก: '+ty+'\n6. จุดแข็งและจุดเสี่ยง (D-F-V-R): '+v('dfvr')+'\n7. สิ่งที่ยังไม่แน่ใจที่สุด + การทดสอบ: '+tst+'\n8. การใช้ AI: '+aiSteps()+'\n9. สิ่งที่เรายังไม่รู้: '+v('guesses');
   }
 
   function logText(){
+    if(mode==='example') return 'เครื่องมือ | ขั้น | เวลา | เก็บอะไรไว้ | ฉันตรวจอะไร\n'+STEPS.map((st,i)=>'ChatGPT | '+(i+1)+' '+st.short+' | 09:'+String(10+i*8).padStart(2,'0')+' | '+st.outs.filter(k=>val(k)).map(k=>F[k].l).join(', ')+' | ตัวอย่าง').join('\n');
     if(!log.length) return 'เครื่องมือ | ขั้น | เวลา | เก็บอะไรไว้ | ฉันตรวจอะไร\n(ยังไม่มีบันทึก กดคัดลอก prompt ในโหมด "เรื่องของฉัน" แล้วจะบันทึกให้เอง)';
-    return 'เครื่องมือ | ขั้น | เวลา | เก็บอะไรไว้ | ฉันตรวจอะไร\n'+log.map(x=>'[ระบุ AI] | '+x.s+' | '+x.t+' | '+(x.keep||'')+' | ').join('\n');
+    return 'เครื่องมือ | ขั้น | เวลา | เก็บอะไรไว้ | ฉันตรวจอะไร\n'+log.map(x=>{const st=STEPS[parseInt(x.s)-1];const kept=st&&!/ท้าทาย/.test(x.s)?st.outs.filter(k=>val(k)).map(k=>F[k].l).join(', '):'';return '[ระบุ AI] | '+x.s+' | '+x.t+' | '+kept+' | '}).join('\n');
   }
 
   function isDone(x){const r=x.outs.filter(k=>!F[k].opt);return r.length?r.every(k=>val(k)):x.outs.some(k=>val(k))}
@@ -415,7 +425,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     // stepper
     $('#stepper').innerHTML=STEPS.map((x,i)=>{const done=isDone(x);return '<li><button type="button" data-go="'+i+'" class="'+(done?'done':'')+'"'+(i===step?' aria-current="step"':'')+'><span class="n">'+(done&&i!==step?'✓':(i+1))+'</span>'+x.short+'</button></li>'}).join('');
     // carried
-    const carried=S.needs.map(k=>val(k)?'<span title="'+esc(val(k))+'">'+L[k]+': '+esc(val(k)).slice(0,40)+(val(k).length>40?'…':'')+'</span>':'<span class="miss">ยังไม่มี: '+L[k]+'</span>').join('');
+    const carried=S.needs.filter(k=>val(k)||!F[k].opt).map(k=>val(k)?'<span title="'+esc(val(k))+'">'+L[k]+': '+esc(val(k)).slice(0,40)+(val(k).length>40?'…':'')+'</span>':'<span class="miss">ยังไม่มี: '+L[k]+'</span>').join('');
     const missing=S.needs.filter(k=>!val(k)&&!F[k].opt);
     const inputs=S.inputs.concat(missing.filter(k=>!S.inputs.includes(k)));
     let h='<div class="stephead"><div><div class="of">ขั้น '+(step+1)+' จาก '+STEPS.length+'</div><h2>'+S.title+'</h2></div>'+
@@ -435,7 +445,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     if(S.extra) h+='<details class="more"><summary>'+S.extra.name+' (ไม่บังคับ)</summary><div class="promptbox" style="margin-top:8px">'+promptText(S.extra,true)+'</div><div class="row"><button type="button" id="copyX">คัดลอก prompt นี้</button><span class="copied" id="copiedX" hidden>คัดลอกแล้ว</span></div></details>';
     h+='</div>';
     h+='<div class="block paste"><h3><span class="k">'+(inputs.length||S.needs.length?3:2)+'</span>'+(S.outs.every(k=>F[k].opt)?'วางผลลัพธ์ไว้ (ไม่บังคับ)':'วางสิ่งที่เลือกจากคำตอบของ AI กลับมา')+'</h3><p class="note" style="margin:0 0 10px">คัดลอกเฉพาะส่วนที่ชอบมาวาง แก้หรือพิมพ์เองได้ สิ่งที่วางตรงนี้จะถูกใช้ในขั้นถัดไป</p><div class="fields">'+S.outs.map(fieldHTML).join('')+'</div>';
-    if(S.card) h+='<details class="more" open><summary>ร่างการ์ดจากข้อมูลที่กรอกไว้</summary><pre class="card" id="cardDraft" style="margin-top:8px">'+esc(cardDraft())+'</pre><div class="row"><button type="button" id="copyCard">คัดลอกร่างการ์ด</button><span class="copied" id="copiedCard" hidden>คัดลอกแล้ว</span></div></details>';
+    if(S.card) h+='<details class="more" id="cardDet"'+(val('card')?'':' open')+'><summary>'+(val('card')?'ร่างอัตโนมัติจากข้อมูลที่กรอก (ไว้เทียบกับการ์ดที่วางแล้ว)':'ร่างอัตโนมัติจากข้อมูลที่กรอก — อัปเดตตามข้อมูลล่าสุด')+'</summary><pre class="card" id="cardDraft" style="margin-top:8px">'+esc(cardDraft())+'</pre><div class="row"><button type="button" id="copyCard">คัดลอกร่างการ์ด</button><span class="copied" id="copiedCard" hidden>คัดลอกแล้ว</span></div></details>';
     if(S.log) h+='<details class="more" open><summary>AI log (บันทึกอัตโนมัติ)</summary><pre class="card" id="logBox" style="margin-top:8px">'+esc(logText())+'</pre><div class="row"><button type="button" id="copyLog">คัดลอก AI log</button><button type="button" id="copyAll">คัดลอกทั้งการ์ดและ log</button><span class="copied" id="copiedLog" hidden>คัดลอกแล้ว</span></div></details>';
     h+='</div>';
     const outMissing=S.outs.filter(k=>!F[k].opt&&!val(k));
