@@ -97,6 +97,7 @@ input[readonly],textarea[readonly],select:disabled{background:var(--sunk);color:
 .copied{color:var(--greenFg);font-weight:700}
 .fallback{width:100%;min-height:140px;margin-top:8px;font-size:13px}
 .note{font-size:14px;color:var(--muted)}
+.miss-note{margin:8px 0 0;font-size:14px;color:var(--red,#C8102E)}
 .exbar{margin:0 18px 8px;border:1.5px dashed var(--gold,#F4CD00);background:var(--goldT);border-radius:12px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
 .exbar p{margin:0;flex:1 1 260px;font-size:15px}
 .exbar .row{margin:0;display:flex;gap:8px;flex-wrap:wrap}
@@ -317,8 +318,8 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
         T:[['Three ideas: {shortlist}','shortlist'],['User: {user}','user'],['Type of work: {domain}','domain'],['Evidence we have now: {evidence}','evidence'],['For each idea:\n1) Score 1–5 on four lenses with a one-line reason each: D people want it · F feasible and safe · V can sell and pay back · R allowed to say under the law\n2) Which laws or agencies likely apply, which phrases go beyond evidence, and safer wording\n3) Evidence needed and the cheapest test for next week\nThen recommend one idea to take forward. Do not invent regulation numbers or references — if unsure, write "check official source".']],
         F:'Score table: Idea | D | F | V | R | Total | Reason, then sections on regulation, evidence and recommendation. Plain language.'},
      extra:{name:'อยากให้ AI ท้าทายอีกรอบ: คู่แข่งและลูกค้าขี้สงสัย',
-        th:{R:'สวมบทสองบทสลับกัน: (1) ผู้จัดการแบรนด์ของเจ้าตลาดในหมวดนี้ในประเทศไทย (2) ผู้ใช้ที่เคยผิดหวังกับโฆษณาเกินจริง',T:[['ไอเดีย: {concept}','concept'],['ในบทคู่แข่ง บอกว่าจะตอบโต้อย่างไรภายใน 6 เดือน ในบทผู้ใช้ บอกว่าอะไรจะทำให้ไม่เชื่อหรือไม่ซื้อ']],F:'สองหัวข้อ หัวข้อละไม่เกิน 5 ข้อ ปิดท้ายด้วยคำถามที่ยากที่สุด 1 ข้อสำหรับฉัน'},
-        en:{R:'Play two roles in turn: (1) brand manager of the market leader in this category in Thailand; (2) a user who has been let down by over-promising ads.',T:[['Idea: {concept}','concept'],['As the competitor, how would you respond within six months? As the user, what would make you distrust or not buy it?']],F:'Two sections, max 5 bullets each. End with the single toughest question for me.'}}},
+        th:{R:'สวมบทสองบทสลับกัน: (1) ผู้จัดการแบรนด์ของเจ้าตลาดในหมวดนี้ในประเทศไทย (2) ผู้ใช้ที่เคยผิดหวังกับโฆษณาเกินจริง',T:[['ไอเดีย: {concept}','concept'],['ผู้ใช้: {user}','user'],['ประเภทงาน: {domain}','domain'],['สิ่งที่จะบอกผู้ใช้: {claims}','claims'],['ในบทคู่แข่ง บอกว่าจะตอบโต้อย่างไรภายใน 6 เดือน ในบทผู้ใช้ บอกว่าอะไรจะทำให้ไม่เชื่อหรือไม่ซื้อ']],F:'สองหัวข้อ หัวข้อละไม่เกิน 5 ข้อ ปิดท้ายด้วยคำถามที่ยากที่สุด 1 ข้อสำหรับฉัน'},
+        en:{R:'Play two roles in turn: (1) brand manager of the market leader in this category in Thailand; (2) a user who has been let down by over-promising ads.',T:[['Idea: {concept}','concept'],['User: {user}','user'],['Type of work: {domain}','domain'],['What we will tell users: {claims}','claims'],['As the competitor, how would you respond within six months? As the user, what would make you distrust or not buy it?']],F:'Two sections, max 5 bullets each. End with the single toughest question for me.'}}},
     {id:'s6',short:'Concept Card',title:'รวมทุกอย่างเป็น Concept Card',min:10,
      tip:'ให้ AI เรียบเรียงทุกอย่างที่เราเลือกมาเป็นการ์ด 9 ช่อง ช่องไหนยังไม่มีข้อมูลให้ AI เขียนว่า "ต้องเติม" แทนการแต่ง แล้วเราแก้ให้เป็นของเรา ด้านล่างมีร่างการ์ดจากข้อมูลที่กรอกไว้ให้ด้วย',
      inputs:[],needs:['problem','user','insight','pov','hmw','concept','dfvr','claims','test','guesses'],outs:['card'],card:true,
@@ -420,12 +421,19 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
       if(el.tagName==='SELECT') fld.addEventListener('click',show);
     });
   }
+  function carriedHTML(S){return S.needs.filter(k=>val(k)||!F[k].opt).map(k=>val(k)?'<span title="'+esc(val(k))+'">'+L[k]+': '+esc(val(k)).slice(0,40)+(val(k).length>40?'…':'')+'</span>':'<span class="miss">ยังไม่มี: '+L[k]+'</span>').join('')}
+  function extraHTML(S){
+    const has=!!val('concept');
+    return '<p class="miss-note" id="xmiss"'+(has?' hidden':'')+'>ยังไม่มีไอเดียที่เลือก วางไอเดีย 1 ข้อในช่อง "ไอเดียที่เลือก" ด้านบนก่อน แล้ว prompt จะขึ้นตรงนี้</p><div id="xbody"'+(has?'':' hidden')+'><div class="promptbox" id="xbox" style="margin-top:8px">'+(has?promptText(S.extra,true):'')+'</div><div class="row"><button type="button" id="copyX">คัดลอก prompt นี้</button><span class="copied" id="copiedX" hidden>คัดลอกแล้ว</span></div></div>';
+  }
+  function refreshExtra(S){const has=!!val('concept');$('#xmiss').hidden=has;$('#xbody').hidden=!has;$('#xbox').innerHTML=has?promptText(S.extra,true):''}
+  function bindExtra(S){const cx=$('#copyX'); if(cx) cx.addEventListener('click',()=>{copy(promptText(S.extra,false),$('#copiedX'),cx.parentNode);if(mode==='mine'){log.push({s:(STEPS.indexOf(S)+1)+' ท้าทายอีกรอบ',t:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});save()}})}
   function render(){
     const S=STEPS[step];
     // stepper
     $('#stepper').innerHTML=STEPS.map((x,i)=>{const done=isDone(x);return '<li><button type="button" data-go="'+i+'" class="'+(done?'done':'')+'"'+(i===step?' aria-current="step"':'')+'><span class="n">'+(done&&i!==step?'✓':(i+1))+'</span>'+x.short+'</button></li>'}).join('');
     // carried
-    const carried=S.needs.filter(k=>val(k)||!F[k].opt).map(k=>val(k)?'<span title="'+esc(val(k))+'">'+L[k]+': '+esc(val(k)).slice(0,40)+(val(k).length>40?'…':'')+'</span>':'<span class="miss">ยังไม่มี: '+L[k]+'</span>').join('');
+    const carried=carriedHTML(S);
     const missing=S.needs.filter(k=>!val(k)&&!F[k].opt);
     const inputs=S.inputs.concat(missing.filter(k=>!S.inputs.includes(k)));
     let h='<div class="stephead"><div><div class="of">ขั้น '+(step+1)+' จาก '+STEPS.length+'</div><h2>'+S.title+'</h2></div>'+
@@ -434,7 +442,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     if(mode==='example') h+=exBar();
     if(inputs.length||S.needs.length){
       h+='<div class="block"><h3><span class="k">1</span>'+(inputs.length?'กรอกข้อมูลสั้น ๆ':'ข้อมูลที่ใช้จากขั้นก่อน')+'</h3>';
-      if(S.needs.length) h+='<div class="carry">'+carried+'</div>';
+      if(S.needs.length) h+='<div class="carry" id="carry">'+carried+'</div>';
       if(missing.length) h+='<p class="note" style="margin:0 0 8px">ช่องที่ยังไม่มีจากขั้นก่อน กรอกตรงนี้ได้เลย</p>';
       if(inputs.length) h+='<div class="fields">'+inputs.map(fieldHTML).join('')+'</div>';
       if(S.seeds) h+='<details class="more"><summary>ยังนึกไม่ออก? เลือกจากโจทย์ตัวอย่าง 12 ข้อ</summary><p class="note">กด "ใช้โจทย์นี้" แล้วระบบจะใส่ในช่อง "โจทย์ที่ฉันเลือก" ให้ ข้ามการรัน prompt ได้</p><div class="filters" id="filters"></div><div class="seeds" id="seeds"></div></details>';
@@ -442,9 +450,9 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     }
     h+='<div class="block"><h3><span class="k">'+(inputs.length||S.needs.length?2:1)+'</span>คัดลอก prompt ไปวางใน AI ที่ใช้</h3><div class="promptbox" id="pbox">'+promptText(S,true)+'</div>'+
       '<div class="row"><button type="button" class="primary big" id="copyP">คัดลอก prompt</button><button type="button" id="expandP">ดูทั้งหมด</button><span class="copied" id="copiedP" hidden>คัดลอกแล้ว ไปวางใน AI ได้เลย</span></div>';
-    if(S.extra) h+='<details class="more"><summary>'+S.extra.name+' (ไม่บังคับ)</summary><div class="promptbox" style="margin-top:8px">'+promptText(S.extra,true)+'</div><div class="row"><button type="button" id="copyX">คัดลอก prompt นี้</button><span class="copied" id="copiedX" hidden>คัดลอกแล้ว</span></div></details>';
     h+='</div>';
     h+='<div class="block paste"><h3><span class="k">'+(inputs.length||S.needs.length?3:2)+'</span>'+(S.outs.every(k=>F[k].opt)?'วางผลลัพธ์ไว้ (ไม่บังคับ)':'วางสิ่งที่เลือกจากคำตอบของ AI กลับมา')+'</h3><p class="note" style="margin:0 0 10px">คัดลอกเฉพาะส่วนที่ชอบมาวาง แก้หรือพิมพ์เองได้ สิ่งที่วางตรงนี้จะถูกใช้ในขั้นถัดไป</p><div class="fields">'+S.outs.map(fieldHTML).join('')+'</div>';
+    if(S.extra) h+='<details class="more" id="xdet"><summary>'+S.extra.name+' (ไม่บังคับ)</summary><p class="note" style="margin:8px 0 0">ใช้หลังจากวาง "ไอเดียที่เลือก" ด้านบนแล้ว prompt นี้จะเปลี่ยนตามไอเดียและเคลมล่าสุด</p><div id="xwrap">'+extraHTML(S)+'</div></details>';
     if(S.card) h+='<details class="more" id="cardDet"'+(val('card')?'':' open')+'><summary>'+(val('card')?'ร่างอัตโนมัติจากข้อมูลที่กรอก (ไว้เทียบกับการ์ดที่วางแล้ว)':'ร่างอัตโนมัติจากข้อมูลที่กรอก — อัปเดตตามข้อมูลล่าสุด')+'</summary><pre class="card" id="cardDraft" style="margin-top:8px">'+esc(cardDraft())+'</pre><div class="row"><button type="button" id="copyCard">คัดลอกร่างการ์ด</button><span class="copied" id="copiedCard" hidden>คัดลอกแล้ว</span></div></details>';
     if(S.log) h+='<details class="more" open><summary>AI log (บันทึกอัตโนมัติ)</summary><pre class="card" id="logBox" style="margin-top:8px">'+esc(logText())+'</pre><div class="row"><button type="button" id="copyLog">คัดลอก AI log</button><button type="button" id="copyAll">คัดลอกทั้งการ์ดและ log</button><span class="copied" id="copiedLog" hidden>คัดลอกแล้ว</span></div></details>';
     h+='</div>';
@@ -463,6 +471,9 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
   }
 
   function refreshLight(S){
+    const ca=$('#carry'); if(ca) ca.innerHTML=carriedHTML(S);
+    if($('#xwrap')) refreshExtra(S);
+    const lb=$('#logBox'); if(lb) lb.textContent=logText();
     $('#pbox').innerHTML=promptText(S,true);
     const cd=$('#cardDraft'); if(cd) cd.textContent=cardDraft();
     $$('#stepper button').forEach((b,i)=>{const x=STEPS[i];const done=isDone(x);b.classList.toggle('done',done);b.querySelector('.n').textContent=done&&i!==step?'✓':(i+1)});
@@ -474,7 +485,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     $$('#stepCard [data-k]').forEach(el=>['input','change'].forEach(ev=>el.addEventListener(ev,()=>{if(mode!=='mine')return;mine[el.dataset.k]=el.value;save();refreshLight(S)})));
     $('#copyP').addEventListener('click',()=>{copy(promptText(S,false),$('#copiedP'),$('#pbox').parentNode);if(mode==='mine'){const now=new Date();log.push({s:(STEPS.indexOf(S)+1)+' '+S.short,t:now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});save()}});
     $('#expandP').addEventListener('click',e=>{const b=$('#pbox');b.classList.toggle('open');e.currentTarget.textContent=b.classList.contains('open')?'ย่อ':'ดูทั้งหมด'});
-    const cx=$('#copyX'); if(cx) cx.addEventListener('click',()=>{copy(promptText(S.extra,false),$('#copiedX'),cx.parentNode);if(mode==='mine'){log.push({s:(STEPS.indexOf(S)+1)+' ท้าทายอีกรอบ',t:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});save()}});
+    bindExtra(S);
     const cc=$('#copyCard'); if(cc) cc.addEventListener('click',()=>copy(cardDraft(),$('#copiedCard'),cc.parentNode));
     const cl=$('#copyLog'); if(cl) cl.addEventListener('click',()=>copy(logText(),$('#copiedLog'),cl.parentNode));
     const ca=$('#copyAll'); if(ca) ca.addEventListener('click',()=>copy((val('card')||cardDraft())+'\n\nAI LOG\n'+logText()+(val('pitch')?'\n\nPITCH\n'+val('pitch'):''),$('#copiedLog'),ca.parentNode));
