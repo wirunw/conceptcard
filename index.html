@@ -158,6 +158,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <span class="status" id="status">กำลังดูตัวอย่าง</span>
     <button type="button" id="modeBtn" class="primary">เริ่มเรื่องของฉัน</button>
+    <button type="button" id="exportBtn">ส่งออกผลลัพธ์</button>
     <button type="button" id="clearBtn" hidden>ล้างข้อมูลของฉัน</button>
   </div>
   <div class="seg" role="group" aria-label="ภาษาของ prompt"><button type="button" id="lTH" aria-pressed="true">Prompt ไทย</button><button type="button" id="lEN" aria-pressed="false">English</button></div>
@@ -428,6 +429,45 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
   }
   function refreshExtra(S){const has=!!val('concept');$('#xmiss').hidden=has;$('#xbody').hidden=!has;$('#xbox').innerHTML=has?promptText(S.extra,true):''}
   function bindExtra(S){const cx=$('#copyX'); if(cx) cx.addEventListener('click',()=>{copy(promptText(S.extra,false),$('#copiedX'),cx.parentNode);if(mode==='mine'){log.push({s:(STEPS.indexOf(S)+1)+' ท้าทายอีกรอบ',t:new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})});save()}})}
+  const EXP=[['problem','โจทย์ที่เลือก'],['user','ผู้ใช้ที่เจาะจง'],['insight','เหตุผลจริง (insight)'],['guesses','สิ่งที่ยังเป็นการเดา ต้องไปถามคนจริง'],['pov','POV'],['hmw','คำถามตั้งต้น'],['shortlist','3 ไอเดียที่ชอบ'],['concept','ไอเดียที่เลือก'],['dfvr','คะแนน D-F-V-R'],['claims','สิ่งที่จะบอกผู้ใช้ (เคลม)'],['test','สิ่งที่ยังไม่แน่ใจที่สุด และการทดสอบ'],['evidence','หลักฐานที่มี']];
+  function buildExport(md){
+    const d=new Date(), ds=d.toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+    const H=t=>md?'## '+t:'■ '+t, out=[];
+    out.push(md?'# Concept Card — '+(val('concept')||'ยังไม่มีชื่อไอเดีย'):'CONCEPT CARD — '+(val('concept')||'ยังไม่มีชื่อไอเดีย'));
+    out.push((mode==='example'?'ตัวอย่างของพลอย · ':'')+'ส่งออกเมื่อ '+ds+(val('domain')?' · ประเภทงาน: '+val('domain'):''));
+    out.push('');
+    out.push(H('Concept Card'+(val('card')?'':' (ร่างอัตโนมัติ)')));out.push(val('card')||cardDraft().replace(/^CONCEPT CARD\n/,''));out.push('');
+    if(val('pitch')){out.push(H('Pitch 60 วินาที'));out.push(val('pitch'));out.push('')}
+    out.push(H('สิ่งที่เลือกไว้ในแต่ละขั้น'));
+    EXP.forEach(([k,l])=>{if(val(k)) out.push((md?'**'+l+'**':l)+': '+val(k))});
+    out.push('');out.push(H('AI log'));out.push(logText());
+    out.push('');out.push('— สร้างจากหน้า "จากปัญหาสุขภาพ สู่ Concept Card" · คณะเภสัชศาสตร์ มหาวิทยาลัยธรรมศาสตร์');
+    return out.join('\n');
+  }
+  function expName(ext){const d=new Date();const p=n=>String(n).padStart(2,'0');return 'concept-card-'+(mode==='example'?'example-':'')+d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'.'+ext}
+  function exportBlock(){
+    return '<div class="block" id="exportBlock"><h3><span class="k">✓</span>ส่งออกผลลัพธ์ไปใช้ต่อ</h3><p class="note" style="margin:0 0 10px">รวม Concept Card, pitch, สิ่งที่เลือกไว้ทุกขั้น และ AI log ไว้ในไฟล์เดียว เปิดได้ใน Word, Google Docs, Notion หรือส่งต่อให้ AI ทำงานต่อ</p>'+
+      '<div class="row"><button type="button" class="primary" id="dlTxt" hidden>ดาวน์โหลด .txt</button><button type="button" id="dlMd" hidden>ดาวน์โหลด .md (Markdown)</button><button type="button" id="cpExp">คัดลอกทั้งหมด</button><span class="copied" id="expMsg" hidden></span></div>'+
+      '<details class="more"><summary>ดูตัวอย่างข้อความที่จะส่งออก</summary><pre class="card" id="expPrev" style="margin-top:8px">'+esc(buildExport(false))+'</pre></details></div>';
+  }
+  let dlNS, dlProbe=null;
+  function getDL(){
+    if(dlProbe) return dlProbe;
+    dlProbe=(window.claude&&typeof window.claude.use==='function')?window.claude.use('downloads').then(ns=>{dlNS=ns;return ns?'claude':'none'},()=>'none'):Promise.resolve('anchor');
+    return dlProbe;
+  }
+  function expMsg(t){const m=$('#expMsg');if(!m)return;m.textContent=t;m.hidden=false;clearTimeout(expMsg.t);expMsg.t=setTimeout(()=>m.hidden=true,3500)}
+  async function doDownload(ext){
+    const txt=buildExport(ext==='md'), name=expName(ext), how=await getDL();
+    if(how==='claude'){try{await dlNS.save({filename:name,data:txt});expMsg('บันทึกไฟล์แล้ว')}catch(e){expMsg(e&&e.code==='declined'?'ยกเลิกการบันทึก':'บันทึกไฟล์ไม่ได้ ใช้ปุ่มคัดลอกแทน')}return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);expMsg('ดาวน์โหลดแล้ว');
+  }
+  function bindExport(){
+    const b=$('#exportBlock'); if(!b) return;
+    $('#cpExp').addEventListener('click',()=>{copy(buildExport(false),$('#expMsg'),$('#cpExp').parentNode);$('#expMsg').textContent='คัดลอกแล้ว'});
+    $('#dlTxt').addEventListener('click',()=>doDownload('txt'));$('#dlMd').addEventListener('click',()=>doDownload('md'));
+    getDL().then(how=>{if(how!=='none'&&$('#dlTxt')){$('#dlTxt').hidden=false;$('#dlMd').hidden=false}else if($('#cpExp')){$('#cpExp').className='primary'}});
+  }
   function render(){
     const S=STEPS[step];
     // stepper
@@ -456,11 +496,13 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     if(S.card) h+='<details class="more" id="cardDet"'+(val('card')?'':' open')+'><summary>'+(val('card')?'ร่างอัตโนมัติจากข้อมูลที่กรอก (ไว้เทียบกับการ์ดที่วางแล้ว)':'ร่างอัตโนมัติจากข้อมูลที่กรอก — อัปเดตตามข้อมูลล่าสุด')+'</summary><pre class="card" id="cardDraft" style="margin-top:8px">'+esc(cardDraft())+'</pre><div class="row"><button type="button" id="copyCard">คัดลอกร่างการ์ด</button><span class="copied" id="copiedCard" hidden>คัดลอกแล้ว</span></div></details>';
     if(S.log) h+='<details class="more" open><summary>AI log (บันทึกอัตโนมัติ)</summary><pre class="card" id="logBox" style="margin-top:8px">'+esc(logText())+'</pre><div class="row"><button type="button" id="copyLog">คัดลอก AI log</button><button type="button" id="copyAll">คัดลอกทั้งการ์ดและ log</button><span class="copied" id="copiedLog" hidden>คัดลอกแล้ว</span></div></details>';
     h+='</div>';
+    if(S.log) h+=exportBlock();
     const outMissing=S.outs.filter(k=>!F[k].opt&&!val(k));
     h+='<div class="nav"><button type="button" id="prev"'+(step===0?' disabled':'')+'>← ย้อนกลับ</button><span class="warn">'+(outMissing.length?'ยังไม่ได้วาง: '+outMissing.map(k=>F[k].l).join(', ')+' · ไปต่อได้ แต่ขั้นถัดไปจะขาดข้อมูลนี้':'')+'</span>'+(step<STEPS.length-1?'<button type="button" class="primary" id="next">ขั้นถัดไป →</button>':'<button type="button" id="next" disabled>จบแล้ว</button>')+'</div>';
     $('#stepCard').innerHTML=h;
     bind(S);
     if(mode==='example') bindExample();
+    bindExport();
     if(S.seeds) renderSeeds();
   }
 
@@ -474,6 +516,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
     const ca=$('#carry'); if(ca) ca.innerHTML=carriedHTML(S);
     if($('#xwrap')) refreshExtra(S);
     const lb=$('#logBox'); if(lb) lb.textContent=logText();
+    const ep=$('#expPrev'); if(ep) ep.textContent=buildExport(false);
     $('#pbox').innerHTML=promptText(S,true);
     const cd=$('#cardDraft'); if(cd) cd.textContent=cardDraft();
     $$('#stepper button').forEach((b,i)=>{const x=STEPS[i];const done=isDone(x);b.classList.toggle('done',done);b.querySelector('.n').textContent=done&&i!==step?'✓':(i+1)});
@@ -530,6 +573,7 @@ footer.site{background:var(--crim);color:#fff;border-top:4px solid var(--gold);p
   $('#lTH').addEventListener('click',()=>setLang('th'));$('#lEN').addEventListener('click',()=>setLang('en'));
   $('#stepper').addEventListener('click',e=>{const b=e.target.closest('button[data-go]');if(b)go(+b.dataset.go)});
 
+  $('#exportBtn').addEventListener('click',()=>{go(STEPS.length-1);const e=$('#exportBlock');if(e){e.scrollIntoView({block:'start'});window.scrollBy(0,-70)}});
   updateMode();setLang(lang);
 })();
 </script>
